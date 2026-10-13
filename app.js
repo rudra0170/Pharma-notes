@@ -204,4 +204,5 @@ async function submitUpload() {
   document.getElementById('title-input').value = '';
   document.getElementById('desc-input').value = '';
   fileInput.value = '';
+  
 }
