@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaNotes — Welcome</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="welcome-body">
+  <div class="bg-animation"></div>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+
+  <div class="welcome-container">
+    <div class="pill-icon">💊</div>
+    <h1 class="welcome-title"><span id="typed"></span><span class="cursor">|</span></h1>
+    <p class="welcome-sub">B.Pharm Notes · Semester Wise · Unit Wise · Free for All</p>
+    <a href="home.html" class="enter-btn">Enter Website →</a>
+  </div>
+
+  <script>
+    const fullText = 'WELCOME TO OUR WEBSITE';
+    let i = 0;
+    const el = document.getElementById('typed');
+    const interval = setInterval(() => {
+      el.textContent = fullText.slice(0, i + 1);
+      i++;
+      if (i >= fullText.length) clearInterval(interval);
+    }, 80);
+  </script>
+</body>
+</html>
