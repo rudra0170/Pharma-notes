@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaNotes — Upload</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav id="navbar" class="navbar"></nav>
+  <div class="page">
+    <h1 class="page-title">Upload Notes</h1>
+    <p class="page-sub">Select subject, unit, enter title and choose PDF file</p>
+
+    <div id="auth-required" style="display:none" class="empty">
+      <div class="empty-icon">🔒</div>
+      <p class="empty-text">Please login to upload notes</p>
+      <a href="login.html" class="enter-btn" style="padding:10px 20px;font-size:14px">Login</a>
+    </div>
+
+    <div id="upload-form" style="display:none">
+      <div class="form-group">
+        <select id="subject-select" class="select"></select>
+      </div>
+      <div class="form-group">
+        <select id="unit-select" class="select">
+          <option value="1">Unit 1</option>
+          <option value="2">Unit 2</option>
+          <option value="3">Unit 3</option>
+          <option value="4">Unit 4</option>
+          <option value="5">Unit 5</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input id="title-input" class="input" placeholder="Notes Title">
+      </div>
+      <div class="form-group">
+        <textarea id="desc-input" class="textarea" rows="3" placeholder="Description (optional)"></textarea>
+      </div>
+      <div class="form-group">
+        <input id="file-input" class="input" type="file" accept="application/pdf">
+      </div>
+      <button id="upload-btn" class="btn-primary" onclick="submitUpload()">Upload</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    renderNavbar();
+    loadUploadPage();
+  </script>
+</body>
+</html>
