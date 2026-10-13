@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaNotes — Subject</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav id="navbar" class="navbar"></nav>
+  <div class="page">
+    <a href="home.html" class="back-link">← Back to Subjects</a>
+    <div style="margin:16px 0 24px">
+      <div id="subject-icon" style="font-size:48px;margin-bottom:8px"></div>
+      <h1 id="subject-name" class="page-title"></h1>
+      <p id="subject-code" class="page-sub" style="margin-bottom:0"></p>
+    </div>
+    <div id="units" class="grid"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    renderNavbar();
+    loadSubjectPage();
+  </script>
+</body>
+</html>
