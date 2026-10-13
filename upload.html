@@ -9,16 +9,22 @@
 <body>
   <nav id="navbar" class="navbar"></nav>
   <div class="page">
-    <h1 class="page-title">Upload Notes</h1>
-    <p class="page-sub">Select subject, unit, enter title and choose PDF file</p>
 
-    <div id="auth-required" style="display:none" class="empty">
-      <div class="empty-icon">🔒</div>
-      <p class="empty-text">Please login to upload notes</p>
-      <a href="login.html" class="enter-btn" style="padding:10px 20px;font-size:14px">Login</a>
+    <div id="password-screen">
+      <h1 class="page-title">Owner Access</h1>
+      <p class="page-sub">Enter password to upload notes</p>
+      <div class="login-box" style="margin-top:0">
+        <div class="form-group">
+          <input id="owner-password" class="input" type="password" placeholder="Password">
+        </div>
+        <button class="btn-primary" onclick="checkPassword()">Enter</button>
+      </div>
     </div>
 
     <div id="upload-form" style="display:none">
+      <h1 class="page-title">Upload Notes</h1>
+      <p class="page-sub">Select subject, unit, enter title and choose PDF file</p>
+
       <div class="form-group">
         <select id="subject-select" class="select"></select>
       </div>
@@ -42,6 +48,7 @@
       </div>
       <button id="upload-btn" class="btn-primary" onclick="submitUpload()">Upload</button>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
