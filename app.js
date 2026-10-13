@@ -2,6 +2,9 @@
 const SUPABASE_URL = 'chvabsselwbtcufeyjam';
 const SUPABASE_ANON_KEY = 'sb_publishable_V1xlVFEG7SljToGCz21scg_XmlPMvE7';
 
+// ============ OWNER PASSWORD ============
+const OWNER_PASSWORD = 'LMCP@#78599';
+
 // ============ SUPABASE CLIENT ============
 let supabaseClient = null;
 
@@ -26,31 +29,18 @@ function getIcon(name) {
 }
 
 // ============ NAVBAR ============
-async function renderNavbar() {
+function renderNavbar() {
   const nav = document.getElementById('navbar');
   if (!nav) return;
-
-  const client = initSupabase();
-  const { data: { user } } = await client.auth.getUser();
 
   nav.innerHTML = `
     <div class="nav-inner">
       <a href="home.html" class="logo">PharmaNotes</a>
       <div class="nav-links">
         <a href="home.html">Home</a>
-        <a href="upload.html">Upload</a>
-        ${user
-          ? '<button class="logout-btn" onclick="logout()">Logout</button>'
-          : '<a href="login.html" class="login-link">Login</a>'}
       </div>
     </div>
   `;
-}
-
-async function logout() {
-  const client = initSupabase();
-  await client.auth.signOut();
-  location.href = 'index.html';
 }
 
 // ============ SUBJECTS ============
@@ -122,7 +112,6 @@ async function loadUnitPage() {
       <div class="empty">
         <div class="empty-icon">📭</div>
         <p class="empty-text">No notes uploaded yet</p>
-        <a href="upload.html" class="enter-btn" style="padding:10px 20px;font-size:14px">+ Upload Notes</a>
       </div>
     `;
     return;
@@ -150,31 +139,31 @@ async function loadUnitPage() {
 }
 
 // ============ UPLOAD PAGE ============
+let passwordOK = false;
+
 async function loadUploadPage() {
   const client = initSupabase();
-  const { data: { user } } = await client.auth.getUser();
-
-  const authBox = document.getElementById('auth-required');
-  const formBox = document.getElementById('upload-form');
-
-  if (!user) {
-    authBox.style.display = 'block';
-    formBox.style.display = 'none';
-    return;
-  }
-  authBox.style.display = 'none';
-  formBox.style.display = 'block';
-
   const { data: subjects } = await client.from('subjects').select('*').order('name');
   const select = document.getElementById('subject-select');
   select.innerHTML = '<option value="">-- Select Subject --</option>' +
     (subjects || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 }
 
+function checkPassword() {
+  const input = document.getElementById('owner-password').value;
+  if (input === OWNER_PASSWORD) {
+    passwordOK = true;
+    document.getElementById('password-screen').style.display = 'none';
+    document.getElementById('upload-form').style.display = 'block';
+  } else {
+    alert('Wrong password');
+  }
+}
+
 async function submitUpload() {
+  if (!passwordOK) return alert('Access denied');
+
   const client = initSupabase();
-  const { data: { user } } = await client.auth.getUser();
-  if (!user) return alert('Please login first');
 
   const subjectId = document.getElementById('subject-select').value;
   const unit = document.getElementById('unit-select').value;
@@ -189,7 +178,7 @@ async function submitUpload() {
   btn.disabled = true;
   btn.textContent = 'Uploading...';
 
-  const filePath = `${user.id}/${Date.now()}-${file.name}`;
+  const filePath = `uploads/${Date.now()}-${file.name}`;
 
   const { error: upErr } = await client.storage.from('notes').upload(filePath, file);
   if (upErr) {
@@ -199,7 +188,6 @@ async function submitUpload() {
   }
 
   const { error: dbErr } = await client.from('notes').insert({
-    user_id: user.id,
     subject_id: subjectId,
     unit: Number(unit),
     title,
@@ -217,37 +205,3 @@ async function submitUpload() {
   document.getElementById('desc-input').value = '';
   fileInput.value = '';
 }
-
-// ============ LOGIN ============
-let isSignup = false;
-
-async function submitLogin() {
-  const client = initSupabase();
-  const email = document.getElementById('email-input').value.trim();
-  const password = document.getElementById('password-input').value;
-  if (!email || !password) return alert('Please enter email and password');
-
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true;
-  btn.textContent = '...';
-
-  const fn = isSignup
-    ? client.auth.signUp({ email, password })
-    : client.auth.signInWithPassword({ email, password });
-
-  const { error } = await fn;
-
-  btn.disabled = false;
-  btn.textContent = isSignup ? 'Sign Up' : 'Login';
-
-  if (error) return alert(error.message);
-  location.href = 'home.html';
-}
-
-function toggleMode() {
-  isSignup = !isSignup;
-  document.getElementById('login-title').textContent = isSignup ? 'Sign Up' : 'Login';
-  document.getElementById('login-btn').textContent = isSignup ? 'Sign Up' : 'Login';
-  document.getElementById('switch-text').textContent = isSignup ? 'Already have account?' : 'New user?';
-  document.getElementById('switch-btn').textContent = isSignup ? 'Login' : 'Sign Up';
-    }
