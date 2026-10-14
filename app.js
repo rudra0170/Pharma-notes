@@ -34,24 +34,28 @@ function renderNavbar() {
   if (!nav) return;
 
   nav.innerHTML = `
-  <div class="nav-inner">
-    <a href="home.html" class="logo">PharmaNotes</a>
-    <div class="nav-links">
-  <a href="home.html">Home</a>
-  <a href="lmcp.html">LMCP Notes</a>
-  <a href="review.html">Reviews</a>
-</div>>
-  </div>
-`;
+    <div class="nav-inner">
+      <a href="home.html" class="logo">PharmaNotes</a>
+      <div class="nav-links">
+        <a href="home.html">Home</a>
+        <a href="lmcp.html">LMCP Notes</a>
+        <a href="review.html">Reviews</a>
+      </div>
+    </div>
+  `;
 }
 
-// ============ SUBJECTS ============
+// ============ BPHARM SUBJECTS ============
 async function loadSubjects() {
   const client = initSupabase();
   const container = document.getElementById('subjects');
   if (!container) return;
 
-  const { data, error } = await client.from('subjects').select('*').order('name');
+  const { data, error } = await client
+    .from('subjects')
+    .select('*')
+    .eq('section', 'bpharm')
+    .order('name');
 
   if (error || !data) {
     container.innerHTML = '<p class="loading">Error loading subjects</p>';
@@ -142,13 +146,24 @@ async function loadUnitPage() {
 
 // ============ UPLOAD PAGE ============
 let passwordOK = false;
+let allSubjectsCache = [];
 
 async function loadUploadPage() {
   const client = initSupabase();
   const { data: subjects } = await client.from('subjects').select('*').order('name');
+  allSubjectsCache = subjects || [];
+  filterSubjects();
+}
+
+function filterSubjects() {
+  const sectionEl = document.getElementById('section-select');
+  const section = sectionEl ? sectionEl.value : 'bpharm';
   const select = document.getElementById('subject-select');
+  if (!select) return;
+
+  const filtered = allSubjectsCache.filter(s => s.section === section);
   select.innerHTML = '<option value="">-- Select Subject --</option>' +
-    (subjects || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 }
 
 function checkPassword() {
@@ -167,6 +182,8 @@ async function submitUpload() {
 
   const client = initSupabase();
 
+  const sectionEl = document.getElementById('section-select');
+  const section = sectionEl ? sectionEl.value : 'bpharm';
   const subjectId = document.getElementById('subject-select').value;
   const unit = document.getElementById('unit-select').value;
   const title = document.getElementById('title-input').value.trim();
@@ -195,6 +212,7 @@ async function submitUpload() {
     title,
     description,
     file_path: filePath,
+    section: section,
   });
 
   btn.disabled = false;
@@ -206,34 +224,96 @@ async function submitUpload() {
   document.getElementById('title-input').value = '';
   document.getElementById('desc-input').value = '';
   fileInput.value = '';
-  
-}
-// ============ FOOTER ============
-function renderFooter() {
-  if (document.body.classList.contains('welcome-body')) return;
-
-  const footer = document.createElement('footer');
-  footer.className = 'site-footer';
-  footer.innerHTML = `
-    <div class="footer-inner">
-      <div class="footer-brand">
-        Developed by <span class="rc-teams">Team RC</span>
-      </div>
-      <div class="footer-disclaimer">
-        <strong>Disclaimer</strong>
-        This website is created for educational purposes only. All notes and study materials
-        are uploaded by the site owner for personal study use. We do not claim ownership of
-        any copyrighted content. If you are a copyright holder and believe your work has
-        been used improperly, please contact us for immediate removal. PharmaNotes is not
-        affiliated with any university, college, or pharmacy council.
-      </div>
-      <div class="footer-copy">© 2026 PharmaNotes · All Rights Reserved</div>
-    </div>
-  `;
-  document.body.appendChild(footer);
 }
 
-document.addEventListener('DOMContentLoaded', renderFooter);
+// ============ REVIEWS ============
+let selectedRating = 0;
+
+function setupStars() {
+  const stars = document.querySelectorAll('.star');
+  if (!stars.length) return;
+
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      selectedRating = Number(star.dataset.value);
+      stars.forEach(s => {
+        s.classList.toggle('active', Number(s.dataset.value) <= selectedRating);
+      });
+    });
+  });
+}
+
+async function submitReview() {
+  const name = document.getElementById('review-name').value.trim();
+  const comment = document.getElementById('review-comment').value.trim();
+
+  if (!name) return alert('Please enter your name');
+  if (selectedRating === 0) return alert('Please select a star rating');
+  if (!comment) return alert('Please write a review');
+
+  const btn = document.getElementById('review-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  const client = initSupabase();
+  const { error } = await client.from('reviews').insert({
+    name,
+    rating: selectedRating,
+    comment
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Submit Review';
+
+  if (error) return alert(error.message);
+
+  alert('Thank you for your review!');
+  document.getElementById('review-name').value = '';
+  document.getElementById('review-comment').value = '';
+  selectedRating = 0;
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+
+  loadReviews();
+}
+
+async function loadReviews() {
+  const container = document.getElementById('reviews-list');
+  if (!container) return;
+
+  const client = initSupabase();
+  const { data, error } = await client
+    .from('reviews')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error || !data || data.length === 0) {
+    container.innerHTML = '<div class="review-empty">No reviews yet. Be the first to review!</div>';
+    return;
+  }
+
+  container.innerHTML = data.map(r => {
+    const date = new Date(r.created_at).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    return `
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-name">${escapeHtml(r.name)}</div>
+          <div class="review-stars">${stars}</div>
+        </div>
+        <div class="review-comment">${escapeHtml(r.comment)}</div>
+        <div class="review-date">${date}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 
 // ============ LMCP SUBJECTS ============
 async function loadLmcpSubjects() {
@@ -242,10 +322,11 @@ async function loadLmcpSubjects() {
   if (!container) return;
 
   const { data, error } = await client
-  .from('subjects')
-  .select('*')
-  .eq('section', 'bpharm')
-  .order('name');
+    .from('subjects')
+    .select('*')
+    .eq('section', 'lmcp')
+    .order('name');
+
   if (error || !data || data.length === 0) {
     container.innerHTML = '<div class="review-empty">No LMCP subjects added yet</div>';
     return;
@@ -332,3 +413,33 @@ async function loadLmcpUnitPage() {
     `;
   }).join('');
 }
+
+// ============ FOOTER ============
+function renderFooter() {
+  if (document.body.classList.contains('welcome-body')) return;
+
+  const footer = document.createElement('footer');
+  footer.className = 'site-footer';
+  footer.innerHTML = `
+    <div class="footer-inner">
+      <div class="footer-brand">
+        Developed by <span class="rc-teams">Team RC</span>
+      </div>
+      <div class="footer-disclaimer">
+        <strong>Disclaimer</strong>
+        This website is created for educational purposes only. All notes and study materials
+        are uploaded by the site owner for personal study use. We do not claim ownership of
+        any copyrighted content. If you are a copyright holder and believe your work has
+        been used improperly, please contact us for immediate removal. PharmaNotes is not
+        affiliated with any university, college, or pharmacy council.
+      </div>
+      <div class="footer-copy">© 2026 PharmaNotes · All Rights Reserved</div>
+    </div>
+  `;
+  document.body.appendChild(footer);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFooter();
+  setupStars();
+});
