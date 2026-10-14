@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaNotes — LMCP Notes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav id="navbar" class="navbar"></nav>
+  <div class="page">
+    <h1 class="page-title">LMCP <span class="cyan">Notes</span></h1>
+    <p class="page-sub">LMCP College notes - Click a subject to view Units</p>
+    <div id="subjects" class="grid">
+      <p class="loading">Loading...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    renderNavbar();
+    loadLmcpSubjects();
+  </script>
+</body>
+</html>
