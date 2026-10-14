@@ -1,5 +1,5 @@
 // ============ SUPABASE CONFIG ============
-const SUPABASE_URL = 'chvabsselwbtcufeyjam';
+const SUPABASE_URL = 'https://chvabsselwbtcufeyjam.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_V1xlVFEG7SljToGCz21scg_XmlPMvE7';
 
 // ============ OWNER PASSWORD ============
