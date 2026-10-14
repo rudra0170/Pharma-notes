@@ -206,3 +206,30 @@ async function submitUpload() {
   fileInput.value = '';
   
 }
+// ============ FOOTER ============
+function renderFooter() {
+  // Welcome page પર footer ના દેખાય
+  if (document.body.classList.contains('welcome-body')) return;
+
+  const footer = document.createElement('footer');
+  footer.className = 'site-footer';
+  footer.innerHTML = `
+    <div class="footer-inner">
+      <div class="footer-brand">
+        Developed by <span class="rc-teams">Team RC</span>
+      </div>
+      <div class="footer-disclaimer">
+        <strong>Disclaimer</strong>
+        This website is created for educational purposes only. All notes and study materials
+        are uploaded by the site owner for personal study use. We do not claim ownership of
+        any copyrighted content. If you are a copyright holder and believe your work has
+        been used improperly, please contact us for imme developeddiate removal. PharmaNotes is not
+        affiliated with any university, college, or pharmacy council.
+      </div>
+      <div class="footer-copy">© 2026 PharmaNotes · All Rights Reserved</div>
+    </div>
+  `;
+  document.body.appendChild(footer);
+}
+
+document.addEventListener('DOMContentLoaded', renderFooter);
