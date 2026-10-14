@@ -254,3 +254,54 @@ body {
   font-size: 13px;
   margin-bottom: 16px;
 }
+
+/* Footer */
+.site-footer {
+  margin-top: 60px;
+  padding: 30px 16px 40px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.4);
+  text-align: center;
+}
+.footer-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.footer-brand {
+  font-size: 15px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+.rc-teams {
+  background: linear-gradient(90deg, #06b6d4, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  font-size: 17px;
+  padding: 0 4px;
+}
+.footer-disclaimer {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.7;
+  max-width: 720px;
+  margin: 0 auto 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  text-align: left;
+}
+.footer-disclaimer strong {
+  color: #94a3b8;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.footer-copy {
+  font-size: 11px;
+  color: #475569;
+  margin-top: 8px;
+}
