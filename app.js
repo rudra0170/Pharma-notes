@@ -233,3 +233,102 @@ function renderFooter() {
 }
 
 document.addEventListener('DOMContentLoaded', renderFooter);
+
+// ============ LMCP SUBJECTS ============
+async function loadLmcpSubjects() {
+  const client = initSupabase();
+  const container = document.getElementById('subjects');
+  if (!container) return;
+
+  const { data, error } = await client
+    .from('subjects')
+    .select('*')
+    .eq('section', 'lmcp')
+    .order('name');
+
+  if (error || !data || data.length === 0) {
+    container.innerHTML = '<div class="review-empty">No LMCP subjects added yet</div>';
+    return;
+  }
+
+  container.innerHTML = data.map(s => `
+    <a href="lmcp-subject.html?id=${s.id}" class="card">
+      <div class="card-icon">${getIcon(s.icon)}</div>
+      <div class="card-title">${s.name}</div>
+      <div class="card-code">${s.code || ''}</div>
+    </a>
+  `).join('');
+}
+
+// ============ LMCP SUBJECT PAGE ============
+async function loadLmcpSubjectPage() {
+  const client = initSupabase();
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+
+  const { data: subject } = await client.from('subjects').select('*').eq('id', id).single();
+
+  document.getElementById('subject-icon').textContent = getIcon(subject?.icon);
+  document.getElementById('subject-name').textContent = subject?.name || '';
+  document.getElementById('subject-code').textContent = subject?.code || '';
+
+  const container = document.getElementById('units');
+  const units = [1, 2, 3, 4, 5];
+  container.innerHTML = units.map(u => `
+    <a href="lmcp-unit.html?subject=${id}&unit=${u}" class="unit-card">
+      <div class="unit-label">UNIT</div>
+      <div class="unit-num">${u}</div>
+      <div class="unit-hint">View Notes →</div>
+    </a>
+  `).join('');
+}
+
+// ============ LMCP UNIT PAGE ============
+async function loadLmcpUnitPage() {
+  const client = initSupabase();
+  const params = new URLSearchParams(location.search);
+  const subjectId = params.get('subject');
+  const unit = params.get('unit');
+
+  document.getElementById('unit-label').textContent = `UNIT ${unit}`;
+  document.getElementById('back-link').href = `lmcp-subject.html?id=${subjectId}`;
+
+  const container = document.getElementById('notes');
+
+  const { data, error } = await client
+    .from('notes')
+    .select('*')
+    .eq('subject_id', subjectId)
+    .eq('unit', Number(unit))
+    .order('created_at', { ascending: false });
+
+  if (error || !data || data.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📭</div>
+        <p class="empty-text">No notes uploaded yet</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = data.map(n => {
+    const { data: urlData } = client.storage.from('notes').getPublicUrl(n.file_path);
+    const url = urlData.publicUrl;
+    return `
+      <div class="note-item">
+        <div class="note-left">
+          <div class="note-icon">📄</div>
+          <div class="note-info">
+            <div class="note-title">${n.title}</div>
+            ${n.description ? `<div class="note-desc">${n.description}</div>` : ''}
+          </div>
+        </div>
+        <div class="note-actions">
+          <a href="${url}" target="_blank" class="btn-view">View</a>
+          <a href="${url}" download class="btn-download">Download</a>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
