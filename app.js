@@ -37,9 +37,10 @@ function renderNavbar() {
   <div class="nav-inner">
     <a href="home.html" class="logo">PharmaNotes</a>
     <div class="nav-links">
-      <a href="home.html">Home</a>
-      <a href="review.html">Reviews</a>
-    </div>
+  <a href="home.html">Home</a>
+  <a href="lmcp.html">LMCP Notes</a>
+  <a href="review.html">Reviews</a>
+</div>>
   </div>
 `;
 }
