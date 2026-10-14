@@ -23,15 +23,23 @@
 
     <div id="upload-form" style="display:none">
       <h1 class="page-title">Upload Notes</h1>
-      <p class="page-sub">Select subject, unit, enter title and choose PDF file</p>
+      <p class="page-sub">Select section, subject, unit, title and PDF file</p>
 
       <div class="form-group">
-  <select id="section-select" class="select" onchange="filterSubjects()">
-    <option value="bpharm">B.Pharm Notes</option>
-    <option value="lmcp">LMCP Notes</option>
-  </select>
+        <label class="review-label">Section</label>
+        <select id="section-select" class="select" onchange="filterSubjects()">
+          <option value="bpharm">B.Pharm Notes</option>
+          <option value="lmcp">LMCP Notes</option>
+        </select>
       </div>
+
       <div class="form-group">
+        <label class="review-label">Subject</label>
+        <select id="subject-select" class="select"></select>
+      </div>
+
+      <div class="form-group">
+        <label class="review-label">Unit</label>
         <select id="unit-select" class="select">
           <option value="1">Unit 1</option>
           <option value="2">Unit 2</option>
@@ -40,15 +48,19 @@
           <option value="5">Unit 5</option>
         </select>
       </div>
+
       <div class="form-group">
         <input id="title-input" class="input" placeholder="Notes Title">
       </div>
+
       <div class="form-group">
         <textarea id="desc-input" class="textarea" rows="3" placeholder="Description (optional)"></textarea>
       </div>
+
       <div class="form-group">
         <input id="file-input" class="input" type="file" accept="application/pdf">
       </div>
+
       <button id="upload-btn" class="btn-primary" onclick="submitUpload()">Upload</button>
     </div>
 
