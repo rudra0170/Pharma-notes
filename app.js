@@ -241,11 +241,10 @@ async function loadLmcpSubjects() {
   if (!container) return;
 
   const { data, error } = await client
-    .from('subjects')
-    .select('*')
-    .eq('section', 'lmcp')
-    .order('name');
-
+  .from('subjects')
+  .select('*')
+  .eq('section', 'bpharm')
+  .order('name');
   if (error || !data || data.length === 0) {
     container.innerHTML = '<div class="review-empty">No LMCP subjects added yet</div>';
     return;
