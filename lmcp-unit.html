@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaNotes — LMCP Unit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav id="navbar" class="navbar"></nav>
+  <div class="page">
+    <a id="back-link" href="lmcp.html" class="back-link">← Back to Units</a>
+    <div style="margin:16px 0 24px">
+      <div id="unit-label" style="color:#a855f7;font-size:12px;letter-spacing:1px;margin-bottom:6px"></div>
+      <h1 class="page-title">Notes & PDFs</h1>
+    </div>
+    <div id="notes"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    renderNavbar();
+    loadLmcpUnitPage();
+  </script>
+</body>
+</html>
